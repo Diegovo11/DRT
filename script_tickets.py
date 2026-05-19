@@ -1,3 +1,6 @@
+#Script para obtener el .json del excel de tickets
+#NOTA: cambiar carpeta y nombre SEGUN EL ARCHIVO
+
 import pandas as pd
 import json
 import os
