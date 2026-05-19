@@ -1,3 +1,6 @@
+#Script para descargar automaticamente los archivos de la plataforma de tickets
+
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
