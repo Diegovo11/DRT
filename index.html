@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control RH - DOPAJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./static/css/estilos.css">
+</head>
+<body>
+
+<header>
+  <div class="top-bar">
+    <div class="logo-dot"></div>
+    <h1>DOPAJ | Panel de Recursos Humanos</h1>
+    <span id="header-range">—</span>
+    <a href="/tickets" style="margin-left: 20px; padding: 8px 16px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">Ir a Tickets →</a>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="setTab('asistencia')">Asistencia y Horarios</button>
+    <button class="tab-btn" onclick="setTab('ubicaciones')">Ubicaciones</button>
+  </div>
+</header>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Supervisor</label>
+    <select id="filter-supervisor"><option value="">Todos los supervisores</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Buscar Empleado</label>
+    <input type="text" id="filter-empleado" placeholder="Escribe nombre o ID...">
+  </div>
+  <div class="filter-group">
+    <label>Fechas (ej: 30/03/26:05/04/26)</label>
+    <input type="text" id="filter-fechas" placeholder="Filtrar por rango...">
+  </div>
+  
+  <div class="actions-group">
+    <button class="btn-reset" onclick="resetFiltros()">↺ Limpiar</button>
+    <label class="checkbox-revisar" id="container-revisar">
+      <input type="checkbox" id="filter-revisar" onchange="render()">
+      <span>Solo ubicaciones para revisión</span>
+    </label>
+  </div>
+</div>
+
+<main id="contenido"></main>
+
+<script src="./static/js/rh.js"></script>
+</body>
+</html>

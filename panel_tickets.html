@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tickets por Supervisor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./static/css/estilos.css">
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Tickets por Supervisor</h1>
+
+  <a href="index.html" style="margin-left: auto; padding: 8px 16px; background: #6b7280; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">← Ir a Recursos Humanos</a>
+  <a href="/salir" style="margin-left: 10px; padding: 8px 16px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">Cerrar Sesión</a>
+</div>
+
+<!-- FILTROS -->
+<div class="filtros">
+  <div class="filtro-group">
+    <label>Desde</label>
+    <input type="date" id="fechaDesde"/>
+  </div>
+  <div class="filtro-group">
+    <label>Hasta</label>
+    <input type="date" id="fechaHasta"/>
+  </div>
+  <button class="btn-aplicar" onclick="aplicarFiltro()">Aplicar filtro</button>
+  <button class="btn-reset"   onclick="resetFiltro()">Restablecer</button>
+</div>
+
+<!-- CHIPS -->
+<div class="chips">
+  <div class="chip activo">
+    <div class="chip-dot activo"></div>
+    Activos: <strong id="totalActivos">—</strong>
+    <span id="pctActivos" style="font-size:11px;opacity:.7;margin-left:4px;"></span>
+  </div>
+  <div class="chip resuelto">
+    <div class="chip-dot resuelto"></div>
+    Resueltos: <strong id="totalResueltos">—</strong>
+    <span id="pctResueltos" style="font-size:11px;opacity:.7;margin-left:4px;"></span>
+  </div>
+  <div class="chip cerrado">
+    <div class="chip-dot cerrado"></div>
+    Cerrados: <strong id="totalCerrados">—</strong>
+    <span id="pctCerrados" style="font-size:11px;opacity:.7;margin-left:4px;"></span>
+  </div>
+  <div class="chip total">
+    <div class="chip-dot total"></div>
+    Total visible: <strong id="totalGeneral">—</strong>
+  </div>
+</div>
+
+<!-- ── HOY ── -->
+<div class="seccion-titulo">Actividad de hoy —
+  <span id="labelHoy" style="text-transform:none;letter-spacing:0;font-weight:600;color:#374151"></span>
+</div>
+
+<div class="hoy-grid" id="hoyGrid" style="display:none">
+  <div class="hoy-card azul">
+    <div class="hoy-label">Abiertos hoy</div>
+    <div class="hoy-value" id="hoyAbiertos">0</div>
+    <div class="hoy-sub">tickets creados hoy</div>
+  </div>
+  <div class="hoy-card naranja">
+    <div class="hoy-label">Cerrados / Resueltos hoy</div>
+    <div class="hoy-value" id="hoyCerrados">0</div>
+    <div class="hoy-sub">tickets finalizados hoy</div>
+  </div>
+</div>
+
+<div class="hoy-tablas" id="hoyTablas" style="display:none">
+  <div class="hoy-tabla-card">
+    <div class="hoy-tabla-header">
+      <div class="hoy-tabla-dot naranja"></div>
+      <span>Cerrados por supervisor</span>
+    </div>
+    <div class="hoy-tabla-wrap">
+      <table class="hoy-tabla">
+        <thead><tr><th>Supervisor</th><th style="text-align:right">Cerrados</th></tr></thead>
+        <tbody id="tablaCerradosHoy"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="hoy-tabla-card">
+    <div class="hoy-tabla-header">
+      <div class="hoy-tabla-dot verde"></div>
+      <span>Resueltos por supervisor</span>
+    </div>
+    <div class="hoy-tabla-wrap">
+      <table class="hoy-tabla">
+        <thead><tr><th>Supervisor</th><th style="text-align:right">Resueltos</th></tr></thead>
+        <tbody id="tablaResueltosHoy"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="hoyVacio" class="sin-datos" style="display:none">
+  Sin datos para hoy — la base aún no ha sido actualizada al día de hoy.
+</div>
+
+<!-- ── ANTIGÜEDAD ── -->
+<div class="seccion-titulo">Antigüedad de tickets activos</div>
+<div class="aging-grid">
+  <div class="aging-card verde">
+    <div class="aging-label">Menos de 5 días</div>
+    <div class="aging-value" id="aging0a5">—</div>
+    <div class="aging-sub" id="aging0a5pct">— % de los activos</div>
+    <div class="aging-bar-wrap"><div class="aging-bar" id="bar0a5" style="width:0%"></div></div>
+  </div>
+  <div class="aging-card naranja">
+    <div class="aging-label">5 a 30 días</div>
+    <div class="aging-value" id="aging5a30">—</div>
+    <div class="aging-sub" id="aging5a30pct">— % de los activos</div>
+    <div class="aging-bar-wrap"><div class="aging-bar" id="bar5a30" style="width:0%"></div></div>
+  </div>
+  <div class="aging-card rojo">
+    <div class="aging-label">Más de 30 días</div>
+    <div class="aging-value" id="aging30mas">—</div>
+    <div class="aging-sub" id="aging30maspct">— % de los activos</div>
+    <div class="aging-bar-wrap"><div class="aging-bar" id="bar30mas" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- ── GRÁFICA 1: ACTIVOS VS RESUELTOS VS CERRADOS ── -->
+<div class="seccion-titulo">Distribución por supervisor
+  <span id="supClickHint" style="text-transform:none;letter-spacing:0;font-weight:400;color:#9ca3af;margin-left:8px">— haz clic en una barra para filtrar</span>
+</div>
+<div class="chart-card">
+  <h2>Activos vs Resueltos vs Cerrados por supervisor</h2>
+  <div id="msg">Cargando datos...</div>
+  <div class="chart-scroll">
+    <div id="chartWrap" style="display:none">
+      <canvas id="miGrafica"></canvas>
+    </div>
+  </div>
+  <div class="leyenda">
+    <div class="leyenda-item"><div class="leyenda-box" style="background:#10b981"></div> Resueltos</div>
+    <div class="leyenda-item"><div class="leyenda-box" style="background:#f97316"></div> Cerrados</div>
+    <div class="leyenda-item"><div class="leyenda-box" style="background:#3b82f6"></div> Activos</div>
+  </div>
+</div>
+
+<!-- ── GRÁFICA 2: DÍAS ACUMULADOS ── -->
+<div class="seccion-titulo" style="margin-top:28px">Días acumulados sin atender por supervisor</div>
+<div class="chart-card">
+  <h2>Suma de días transcurridos por supervisor</h2>
+  <p>Solo tickets activos · suma total de días desde la creación hasta hoy</p>
+  <div class="chart-scroll">
+    <div id="chartDiasWrap">
+      <canvas id="graficaDias"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── NUEVO: GRÁFICA 3 — ACTIVOS POR ESTADO ── -->
+<div class="seccion-titulo" style="margin-top:28px">Tickets activos por estado</div>
+<div class="chart-card">
+  <h2>Distribución de tickets activos por entidad federativa</h2>
+  <p>Solo considera tickets con status Activo · sin filtro de fechas</p>
+  <div class="chart-scroll">
+    <div id="chartEstadoWrap">
+      <canvas id="graficaEstado"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── NUEVO: BANNER SUPERVISOR SELECCIONADO ── -->
+<div id="supervisorBanner" class="supervisor-banner" style="margin-top:28px">
+  <strong id="bannerNombre"></strong>
+  <span id="bannerConteo"></span>
+  <button class="btn-limpiar-sup" onclick="limpiarSupervisor()">✕ Ver todos</button>
+</div>
+
+<!-- ── NUEVO: TABLA VISUALIZADOR DE TICKETS ── -->
+<div class="seccion-titulo" id="tituloTablaTickets" style="margin-top:28px">Visualizador de tickets</div>
+<div class="tabla-tickets-card">
+  <div class="tabla-tickets-header">
+    <h2>Detalle de tickets <span id="badgeTabla" class="tabla-tickets-badge">—</span></h2>
+    <div class="tabla-status-filter">
+      <button class="status-pill todos active" onclick="setStatusFiltro('todos',this)">Todos</button>
+      <button class="status-pill activo-pill" onclick="setStatusFiltro('Activo',this)">Activo</button>
+      <button class="status-pill resuelto-pill" onclick="setStatusFiltro('Resuelto',this)">Resuelto</button>
+      <button class="status-pill cerrado-pill" onclick="setStatusFiltro('Cerrado',this)">Cerrado</button>
+    </div>
+    <div class="tabla-search-wrap">
+      <input class="tabla-search" type="text" id="searchTabla" placeholder="Buscar ticket, ciudad, inmueble…" oninput="renderTabla()"/>
+    </div>
+  </div>
+  <div class="tabla-wrap">
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th onclick="sortTabla('supervisor')">Supervisor <span class="sort-icon" id="si-supervisor">↕</span></th>
+          <th onclick="sortTabla('ticket_sharp')">Ticket Sharp <span class="sort-icon" id="si-ticket_sharp">↕</span></th>
+          <th onclick="sortTabla('ticket_isste')">Ticket ISSTE <span class="sort-icon" id="si-ticket_isste">↕</span></th>
+          <th onclick="sortTabla('fecha')">Fecha creado <span class="sort-icon" id="si-fecha">↕</span></th>
+          <th onclick="sortTabla('status')">Status <span class="sort-icon" id="si-status">↕</span></th>
+          <th onclick="sortTabla('ciudad')">Ciudad <span class="sort-icon" id="si-ciudad">↕</span></th>
+          <th onclick="sortTabla('inmueble')">Inmueble <span class="sort-icon" id="si-inmueble">↕</span></th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyTickets"></tbody>
+    </table>
+  </div>
+  <div class="tabla-footer">
+    <div class="pag-info" id="pagInfo">—</div>
+    <div class="pag-btns" id="pagBtns"></div>
+  </div>
+</div>
+
+<script src="./static/js/tickets.js"></script>
+</body>
+</html>
