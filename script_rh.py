@@ -1,3 +1,7 @@
+#script para verificar las asistencias ubicacion e incidencias tneer todos los archivos a la mano
+#IMPORTANTE DIRECTORIO 
+
+
 import pandas as pd
 import json
 import os
