@@ -1,5 +1,6 @@
 #Script para descargar automaticamente los archivos de la plataforma de tickets
-
+#NOTA: EL SCRIPT BORRA TODOS LOS ARCHIVOS DE LA CARPETA DPONDE SE GUARDA EL EXCEL DE TICKETS
+#RENOMBRA EL ARCHIVO PARA MAYIOR COMODIDAR VERIFICAR EN EL CODIGO 
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
