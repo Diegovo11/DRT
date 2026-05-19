@@ -49,4 +49,24 @@
 
 <script src="./static/js/rh.js"></script>
 </body>
+<script>
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+const HASH_CORRECTO = "2f6f96455ab4a81140ba2c5cc24b5f620e3162c1e5753ab0d895fec86fc6f644";
+//Hola :)
+
+(async () => {
+  if (sessionStorage.getItem("auth") === "ok") return;
+  const intento = prompt("Ingresa la contraseña:");
+  const hash = await hashStr(intento || "");
+  if (hash === HASH_CORRECTO) {
+    sessionStorage.setItem("auth", "ok");
+  } else {
+    document.body.innerHTML = "<p style='text-align:center;margin-top:40vh;font-family:sans-serif;color:red;'>Acceso denegado.</p>";
+  }
+})();
+</script>
 </html>
